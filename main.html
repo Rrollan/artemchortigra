@@ -3,80 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ПОЛИНА КИЛЛЕР</title>
-    <!-- Оставляем на всякий случай, но теперь мы не зависим от этого -->
+    <title>ПОЛИНА КИЛЛЕР: BOSS UPDATE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         
-        /* --- БАЗОВЫЕ СТИЛИ (ЗАМЕНА TAILWIND ЕСЛИ ОН НЕ ГРУЗИТСЯ) --- */
         body { margin: 0; overflow: hidden; background-color: #1a1a1a; user-select: none; font-family: 'Press Start 2P', monospace; image-rendering: pixelated; color: white; }
         canvas { display: block; }
         
-        /* Утилиты (чтобы работало без интернета) */
         .hidden { display: none !important; }
-        .flex { display: flex; }
-        .flex-col { flex-direction: column; }
-        .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .items-center { align-items: center; }
-        .items-start { align-items: flex-start; }
-        .absolute { position: absolute; }
-        .relative { position: relative; }
-        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
-        .w-full { width: 100%; }
-        .h-full { height: 100%; }
-        .z-10 { z-index: 10; }
-        .z-50 { z-index: 50; }
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .pointer-events-none { pointer-events: none; }
-        .pointer-events-auto { pointer-events: auto; }
-        .p-5 { padding: 20px; }
-        .p-4 { padding: 16px; }
-        .p-6 { padding: 24px; }
-        .mb-2 { margin-bottom: 8px; }
-        .mb-4 { margin-bottom: 16px; }
-        .mb-6 { margin-bottom: 24px; }
-        .mb-8 { margin-bottom: 32px; }
-        .mt-2 { margin-top: 8px; }
-        .mt-10 { margin-top: 40px; }
-        .mx-4 { margin-left: 16px; margin-right: 16px; }
-        .gap-4 { gap: 16px; }
-        .grid { display: grid; }
-        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-        
-        @media (min-width: 768px) {
-            .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .md\:text-6xl { font-size: 3.75rem; }
-            .md\:text-sm { font-size: 0.875rem; }
-        }
-
-        /* Цвета и оформление */
-        .bg-gray-900 { background-color: #111827; }
-        .bg-gray-800 { background-color: #1f2937; }
-        .bg-gray-700 { background-color: #374151; }
-        .bg-black { background-color: black; }
-        .text-white { color: white; }
-        .text-black { color: black; }
-        .text-yellow-400 { color: #facc15; }
-        .text-green-400 { color: #4ade80; }
-        .text-green-500 { color: #22c55e; }
-        .text-red-400 { color: #f87171; }
-        .text-red-500 { color: #ef4444; }
-        .text-red-600 { color: #dc2626; }
-        .text-blue-400 { color: #60a5fa; }
-        .text-purple-400 { color: #c084fc; }
-        .text-gray-400 { color: #9ca3af; }
-        
-        .rounded { border-radius: 0.25rem; }
-        .rounded-lg { border-radius: 0.5rem; }
-        .border-2 { border-width: 2px; }
-        .border-4 { border-width: 4px; }
-        .border-white { border-color: white; }
-        .border-gray-600 { border-color: #4b5563; }
-        
         .pixel-font { font-family: 'Press Start 2P', cursive; text-shadow: 2px 2px 0 #000; }
+        
+        /* Кнопки */
         .btn-retro { 
             background: #eab308; 
             border: 4px solid #fff; 
@@ -93,112 +31,92 @@
         
         .modal-overlay { background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(5px); }
         
-        /* Стили для индикаторов */
-        .w-8 { width: 32px; }
-        .h-8 { height: 32px; }
-        .rounded-full { border-radius: 50%; }
-        .bg-blue-500 { background-color: #3b82f6; }
-        .bg-red-500 { background-color: #ef4444; }
-        .bg-green-500 { background-color: #22c55e; }
-        .bg-purple-500 { background-color: #a855f7; }
-        .bg-gray-400 { background-color: #9ca3af; }
-
-        .space-x-2 > * + * { margin-left: 0.5rem; }
-        
         /* Анимация урона */
         @keyframes damage-blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .player-damage { animation: damage-blink 0.2s infinite; }
+
+        /* Анимация текста этажа */
+        @keyframes zoom-in-out {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        .animate-floor { animation: zoom-in-out 3s forwards; }
     </style>
 </head>
 <body>
 
     <!-- HUD (Интерфейс) -->
     <div id="hud-layer" class="absolute top-0 left-0 w-full h-full pointer-events-none p-5 flex flex-col justify-between hidden z-10">
+        <!-- Верхняя панель -->
         <div class="flex justify-between items-start text-white pixel-font text-xs md:text-sm">
             <div>
                 <div class="text-yellow-400 mb-2">ЭТАЖ: <span id="floor-display">1</span></div>
                 <div class="text-green-400">КЭШ: $<span id="money-display">0</span></div>
+                <div class="text-gray-400 text-[10px] mt-1">ДО БОССА: <span id="kills-display">30</span></div>
             </div>
             <div class="text-right">
                 <div id="lives-container" class="mb-2 text-red-500 text-xl tracking-widest">♥♥♥</div>
                 <div class="text-blue-400 text-xs">ОРУЖИЕ: <span id="weapon-display">ПИСТОЛЕТ</span></div>
             </div>
         </div>
-        
-        <!-- Нижняя панель с кнопкой и индикаторами -->
-        <div class="flex flex-col items-center pointer-events-auto" style="margin-bottom: 20px;">
-            <!-- Индикаторы активных способностей -->
-            <div id="abilities-indicator" class="flex justify-center space-x-2 mb-4">
-                <div id="speed-indicator" class="hidden w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white pixel-font text-xs">
-                    <span id="speed-level-indicator">0</span>
-                </div>
-                <div id="damage-indicator" class="hidden w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white pixel-font text-xs">
-                    <span id="damage-level-indicator">0</span>
-                </div>
-                <div id="health-indicator" class="hidden w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white pixel-font text-xs">
-                    <span id="health-level-indicator">0</span>
-                </div>
-                <div id="ulti-indicator" class="hidden w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white pixel-font text-xs">
-                    <span id="ulti-level-indicator">0</span>
-                </div>
+
+        <!-- Полоска здоровья БОССА -->
+        <div id="boss-hud" class="hidden absolute top-16 left-0 w-full flex flex-col items-center justify-center transition-opacity duration-500">
+            <h2 class="text-red-600 pixel-font text-xs md:text-base mb-1" style="text-shadow: 2px 2px 0 #000;">ПЛОТОЯДНЫЙ ЦВЕТОК</h2>
+            <div class="w-1/2 h-4 md:h-6 bg-gray-900 border-2 border-white relative">
+                <div id="boss-hp-bar" class="h-full bg-red-600 transition-all duration-200" style="width: 100%;"></div>
             </div>
-            
-            <!-- Кнопка открытия магазина -->
+        </div>
+        
+        <!-- Нижняя панель -->
+        <div class="flex flex-col items-center pointer-events-auto" style="margin-bottom: 20px;">
+            <div id="abilities-indicator" class="flex justify-center space-x-2 mb-4 gap-2">
+                <div id="speed-indicator" class="hidden w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white pixel-font text-xs"><span id="speed-level-indicator">0</span></div>
+                <div id="damage-indicator" class="hidden w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white pixel-font text-xs"><span id="damage-level-indicator">0</span></div>
+                <div id="health-indicator" class="hidden w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white pixel-font text-xs"><span id="health-level-indicator">0</span></div>
+                <div id="ulti-indicator" class="hidden w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white pixel-font text-xs"><span id="ulti-level-indicator">0</span></div>
+            </div>
             <button id="shop-btn" class="btn-retro" style="background-color: #a855f7;">СПОСОБНОСТИ (C)</button>
         </div>
     </div>
 
-    <!-- Магазин способностей -->
+    <!-- Объявление этажа -->
+    <div id="level-announcement" class="hidden absolute inset-0 flex items-center justify-center pointer-events-none z-40">
+        <h1 id="announcement-text" class="text-4xl md:text-6xl text-yellow-400 pixel-font" style="text-shadow: 4px 4px 0 #000;">ЭТАЖ 2</h1>
+    </div>
+
+    <!-- Магазин -->
     <div id="shop-modal" class="hidden absolute inset-0 z-50 modal-overlay flex flex-col items-center justify-center pointer-events-auto">
         <div class="bg-gray-800 p-6 rounded-lg border-4 border-white max-w-2xl w-full mx-4" style="max-height: 90vh; overflow-y: auto;">
-            <h2 class="text-3xl text-yellow-400 pixel-font mb-6 text-center">МАГАЗИН СПОСОБНОСТЕЙ</h2>
-            
+            <h2 class="text-3xl text-yellow-400 pixel-font mb-6 text-center">МАГАЗИН</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <!-- Способность 1: Увеличение скорости -->
+                <!-- Товары -->
                 <div class="bg-gray-700 p-4 rounded border-2 border-gray-600">
-                    <h3 class="text-lg text-blue-400 pixel-font mb-2">СКОРОСТЬ БОЕВАЯ</h3>
-                    <p class="text-white pixel-font text-xs mb-2">Увеличивает скорость передвижения на 20%</p>
+                    <h3 class="text-lg text-blue-400 pixel-font mb-2">СКОРОСТЬ</h3>
                     <p class="text-green-400 pixel-font text-xs">ЦЕНА: $<span id="speed-cost">500</span></p>
                     <button class="buy-speed btn-retro w-full mt-2">КУПИТЬ</button>
-                    <div class="mt-2 text-center">
-                        <span class="text-yellow-300 pixel-font text-xs">КУПЛЕНО: <span id="speed-level">0</span>/5</span>
-                    </div>
+                    <div class="mt-1 text-center"><span class="text-yellow-300 pixel-font text-[10px]">LVL: <span id="speed-level">0</span>/5</span></div>
                 </div>
-                
-                <!-- Способность 2: Увеличение урона -->
                 <div class="bg-gray-700 p-4 rounded border-2 border-gray-600">
-                    <h3 class="text-lg text-red-400 pixel-font mb-2">УРОНИСТЬ</h3>
-                    <p class="text-white pixel-font text-xs mb-2">Увеличивает урон от камней на 25%</p>
+                    <h3 class="text-lg text-red-400 pixel-font mb-2">УРОН</h3>
                     <p class="text-green-400 pixel-font text-xs">ЦЕНА: $<span id="damage-cost">750</span></p>
                     <button class="buy-damage btn-retro w-full mt-2">КУПИТЬ</button>
-                    <div class="mt-2 text-center">
-                        <span class="text-yellow-300 pixel-font text-xs">КУПЛЕНО: <span id="damage-level">0</span>/5</span>
-                    </div>
+                    <div class="mt-1 text-center"><span class="text-yellow-300 pixel-font text-[10px]">LVL: <span id="damage-level">0</span>/5</span></div>
                 </div>
-                
-                <!-- Способность 3: Увеличение здоровья -->
                 <div class="bg-gray-700 p-4 rounded border-2 border-gray-600">
-                    <h3 class="text-lg text-green-400 pixel-font mb-2">ЖИВУЧЕСТЬ</h3>
-                    <p class="text-white pixel-font text-xs mb-2">Увеличивает максимальное здоровье на 1 сердце</p>
+                    <h3 class="text-lg text-green-400 pixel-font mb-2">ЖИЗНИ</h3>
                     <p class="text-green-400 pixel-font text-xs">ЦЕНА: $<span id="health-cost">1000</span></p>
                     <button class="buy-health btn-retro w-full mt-2">КУПИТЬ</button>
-                    <div class="mt-2 text-center">
-                        <span class="text-yellow-300 pixel-font text-xs">КУПЛЕНО: <span id="health-level">0</span>/3</span>
-                    </div>
+                    <div class="mt-1 text-center"><span class="text-yellow-300 pixel-font text-[10px]">LVL: <span id="health-level">0</span>/3</span></div>
                 </div>
-                
-                <!-- Способность 4: Увеличение ульты -->
                 <div class="bg-gray-700 p-4 rounded border-2 border-gray-600">
-                    <h3 class="text-lg text-purple-400 pixel-font mb-2">ГРАД КАМНЕЙ</h3>
-                    <p class="text-white pixel-font text-xs mb-2">Увеличивает количество камней в ульте на 5</p>
+                    <h3 class="text-lg text-purple-400 pixel-font mb-2">УЛЬТА</h3>
                     <p class="text-green-400 pixel-font text-xs">ЦЕНА: $<span id="ulti-cost">1500</span></p>
                     <button class="buy-ulti btn-retro w-full mt-2">КУПИТЬ</button>
-                    <div class="mt-2 text-center">
-                        <span class="text-yellow-300 pixel-font text-xs">КУПЛЕНО: <span id="ulti-level">0</span>/5</span>
-                    </div>
+                    <div class="mt-1 text-center"><span class="text-yellow-300 pixel-font text-[10px]">LVL: <span id="ulti-level">0</span>/5</span></div>
                 </div>
             </div>
-            
             <div class="flex justify-center">
                 <button id="close-shop-btn" class="btn-retro" style="background-color: #9ca3af;">ЗАКРЫТЬ</button>
             </div>
@@ -215,21 +133,21 @@
     <!-- Главное Меню -->
     <div id="start-screen" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 z-50">
         <h1 class="text-4xl md:text-6xl text-green-500 pixel-font mb-4 text-center">ПОЛИНА <br><span class="text-red-600">КИЛЛЕР</span></h1>
-        <p class="text-gray-400 mb-8 pixel-font text-[10px] text-center">WASD - Ходить <br> ЛКМ - Стрелять <br> C - Магазин <br> F - Ульта <br> ESC - Пауза/Меню</p>
+        <p class="text-gray-400 mb-8 pixel-font text-[10px] text-center">WASD - Ходить | ЛКМ - Стрелять | Shift - Рывок <br> C - Магазин | F - Ульта | ESC - Пауза</p>
         <button id="start-btn" class="btn-retro px-8 py-4 text-black font-bold pixel-font text-sm">НАЧАТЬ ЗАЧИСТКУ</button>
     </div>
 
     <!-- Экран смерти -->
     <div id="game-over" class="hidden absolute inset-0 z-50 bg-black flex flex-col items-center justify-center pointer-events-auto">
         <h2 class="text-5xl text-red-600 pixel-font mb-4">ПОТРАЧЕНО</h2>
-        <p class="text-white pixel-font text-xs mb-8">СЧЕТ: <span id="final-score">0</span></p>
+        <p class="text-white pixel-font text-xs mb-8">СЧЕТ: <span id="final-score">0</span> | ЭТАЖ: <span id="final-floor">1</span></p>
         <button id="restart-btn" class="btn-retro px-6 py-3 text-black font-bold pixel-font text-xs">РЕСТАРТ</button>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
     <script>
-        // --- ДВИЖОК МНОГОСЛОЙНЫХ СПРАЙТОВ (Для врагов) ---
+        // --- ДВИЖОК СПРАЙТОВ ---
         class SpriteLayer {
             constructor(src, cols, rows) {
                 this.image = new Image();
@@ -238,7 +156,6 @@
                 this.rows = rows;
                 this.loaded = false;
                 this.image.onload = () => { this.loaded = true; };
-                this.image.onerror = () => { console.warn("Файл не найден:", src); };
             }
         }
 
@@ -249,301 +166,277 @@
                 this.currentFrame = 0;
                 this.timer = 0;
             }
-
             update() {
                 this.timer++;
                 const base = this.layers[1] || this.layers[0];
                 if (base && base.loaded) {
-                    if (this.timer % this.speed === 0) {
-                        this.currentFrame = (this.currentFrame + 1) % base.cols;
-                    }
+                    if (this.timer % this.speed === 0) this.currentFrame = (this.currentFrame + 1) % base.cols;
                 }
             }
-
             draw(ctx, x, y, size, angleToPlayer) {
-                // 0=Up, 1=Down, 2=Left, 3=Right
                 let row = 1; 
                 let deg = angleToPlayer * 180 / Math.PI;
-                
-                if (deg >= -45 && deg < 45) row = 3;       // Право
-                else if (deg >= 45 && deg < 135) row = 1;  // Вниз
-                else if (deg >= -135 && deg < -45) row = 0;// Вверх
-                else row = 2;                              // Влево
-
+                if (deg >= -45 && deg < 45) row = 3; else if (deg >= 45 && deg < 135) row = 1; else if (deg >= -135 && deg < -45) row = 0; else row = 2;
                 this.layers.forEach(layer => {
-                    if (!layer.loaded || layer.image.width === 0) return;
-
+                    if (!layer.loaded) return;
                     const frameW = layer.image.width / layer.cols;
                     const frameH = layer.image.height / layer.rows;
-
-                    ctx.drawImage(
-                        layer.image,
-                        this.currentFrame * frameW, row * frameH,
-                        frameW, frameH,
-                        x - size / 2, y - size / 2,
-                        size, size
-                    );
+                    ctx.drawImage(layer.image, this.currentFrame * frameW, row * frameH, frameW, frameH, x - size / 2, y - size / 2, size, size);
                 });
             }
         }
-        
-        // --- НОВАЯ СИСТЕМА АНИМАЦИЙ ДЛЯ ИГРОКА ---
-        class PlayerSprite {
+
+        class BossSprite {
             constructor() {
-                this.animations = {};
-                this.currentAnimation = 'idle';
+                this.image = new Image();
+                this.image.src = 'img/enemy/boss.png'; 
+                this.loaded = false;
+                this.image.onload = () => { this.loaded = true; };
+                this.cols = 8; // Предполагаем 8 кадров
+                this.rows = 4;
                 this.frameIndex = 0;
                 this.timer = 0;
-                this.animationSpeed = 8;
+                this.state = 'idle';
+            }
+            update(state) {
+                this.state = state;
+                this.timer++;
+                let speed = (this.state === 'attack') ? 5 : 10;
+                if (this.timer % speed === 0) this.frameIndex = (this.frameIndex + 1) % this.cols;
+            }
+            draw(ctx, x, y, size) {
+                if (!this.loaded) {
+                    // Фолбек если нет картинки
+                    ctx.fillStyle = '#ef4444';
+                    ctx.fillRect(x - size/2, y - size/2, size, size);
+                    return;
+                }
+                let row = 0;
+                if (this.state === 'idle') row = 0;
+                if (this.state === 'attack') row = 1;
+                if (this.state === 'bite') row = 2;
+                if (this.state === 'death') row = 3;
+                const frameW = this.image.width / this.cols;
+                const frameH = this.image.height / this.rows;
+                ctx.drawImage(this.image, this.frameIndex * frameW, row * frameH, frameW, frameH, x - size/2, y - size/2, size, size);
+            }
+        }
+        
+        class PlayerSprite {
+            constructor() {
+                this.animations = {}; this.currentAnimation = 'idle'; this.frameIndex = 0; this.timer = 0; this.animationSpeed = 8;
                 this.loadAnimations();
             }
-            
             loadAnimations() {
-                this.animations = {
+                // Заглушки путей, предполагается что они есть
+                const paths = {
                     idle: ['img/player/character_maleAdventurer_idle.png'],
-                    walk: [
-                        'img/player/character_maleAdventurer_walk0.png',
-                        'img/player/character_maleAdventurer_walk1.png',
-                        'img/player/character_maleAdventurer_walk2.png',
-                        'img/player/character_maleAdventurer_walk3.png',
-                        'img/player/character_maleAdventurer_walk4.png',
-                        'img/player/character_maleAdventurer_walk5.png',
-                        'img/player/character_maleAdventurer_walk6.png',
-                        'img/player/character_maleAdventurer_walk7.png'
-                    ],
-                    run: [
-                        'img/player/character_maleAdventurer_run0.png',
-                        'img/player/character_maleAdventurer_run1.png',
-                        'img/player/character_maleAdventurer_run2.png'
-                    ],
+                    walk: Array.from({length:8}, (_,i) => `img/player/character_maleAdventurer_walk${i}.png`),
+                    run: Array.from({length:3}, (_,i) => `img/player/character_maleAdventurer_run${i}.png`),
                     slide: ['img/player/character_maleAdventurer_slide.png'],
-                    attack: [
-                        'img/player/character_maleAdventurer_attack0.png',
-                        'img/player/character_maleAdventurer_attack1.png',
-                        'img/player/character_maleAdventurer_attack2.png'
-                    ],
+                    attack: Array.from({length:3}, (_,i) => `img/player/character_maleAdventurer_attack${i}.png`),
                     hurt: ['img/player/character_maleAdventurer_hurt.png']
                 };
-                
-                for (let animName in this.animations) {
-                    this.animations[animName] = this.animations[animName].map(src => {
-                        const img = new Image();
-                        img.src = src;
-                        img.loaded = false;
-                        img.onload = () => { img.loaded = true; };
-                        img.onerror = () => { console.error("Ошибка загрузки:", src); };
-                        return img;
+                for (let k in paths) {
+                    this.animations[k] = paths[k].map(src => {
+                        const img = new Image(); img.src = src; img.loaded = false;
+                        img.onload = () => { img.loaded = true; }; return img;
                     });
                 }
             }
-            
             setAnimation(name) {
                 if (!this.animations[name]) return;
-                if (this.currentAnimation !== name) {
-                    this.currentAnimation = name;
-                    this.frameIndex = 0;
-                    this.timer = 0;
-                }
+                if (this.currentAnimation !== name) { this.currentAnimation = name; this.frameIndex = 0; this.timer = 0; }
             }
-            
             update(moving, attacking, speed, isSliding) {
-                if (attacking) {
-                    this.setAnimation('attack');
-                    this.animationSpeed = 5;
-                } else if (isSliding) {
-                    this.setAnimation('slide');
-                    this.animationSpeed = 8;
-                } else if (moving) {
-                    if (speed > 3) {
-                        this.setAnimation('run');
-                        this.animationSpeed = 6;
-                    } else {
-                        this.setAnimation('walk');
-                        this.animationSpeed = 8;
-                    }
-                } else {
-                    this.setAnimation('idle');
-                    this.animationSpeed = 15;
-                }
-                
+                if (attacking) { this.setAnimation('attack'); this.animationSpeed = 5; }
+                else if (isSliding) { this.setAnimation('slide'); this.animationSpeed = 8; }
+                else if (moving) {
+                    if (speed > 3) { this.setAnimation('run'); this.animationSpeed = 6; }
+                    else { this.setAnimation('walk'); this.animationSpeed = 8; }
+                } else { this.setAnimation('idle'); this.animationSpeed = 15; }
                 this.timer++;
-                const currentFrames = this.animations[this.currentAnimation];
-                if (currentFrames && currentFrames.length > 0) {
-                    if (this.timer % this.animationSpeed === 0) {
-                        this.frameIndex = (this.frameIndex + 1) % currentFrames.length;
-                    }
-                }
+                const frames = this.animations[this.currentAnimation];
+                if (frames && frames.length && this.timer % this.animationSpeed === 0) this.frameIndex = (this.frameIndex + 1) % frames.length;
             }
-            
-            draw(ctx, x, y, size, angleToPlayer) {
-                const currentAnim = this.animations[this.currentAnimation];
-                if (!currentAnim || currentAnim.length === 0) {
-                    ctx.fillStyle = '#3b82f6';
-                    ctx.fillRect(x - size/2, y - size/2, size, size);
-                    return;
-                }
+            draw(ctx, x, y, size, angle) {
+                const anim = this.animations[this.currentAnimation];
+                if (!anim || !anim.length) { ctx.fillStyle = '#3b82f6'; ctx.fillRect(x-size/2,y-size/2,size,size); return; }
+                const frame = anim[this.frameIndex % anim.length];
+                if (!frame || !frame.loaded) { ctx.fillStyle = '#3b82f6'; ctx.fillRect(x-size/2,y-size/2,size,size); return; }
                 
-                const safeIndex = this.frameIndex % currentAnim.length;
-                const frame = currentAnim[safeIndex];
-                
-                if (!frame || !frame.loaded) {
-                    ctx.fillStyle = '#3b82f6';
-                    ctx.fillRect(x - size/2, y - size/2, size, size);
-                    return;
-                }
-                
-                let deg = angleToPlayer * 180 / Math.PI;
-                let isLeft = false;
-                if (Math.abs(deg) > 90) isLeft = true;
-                
-                ctx.save();
-                ctx.translate(x, y);
+                let isLeft = Math.abs(angle * 180 / Math.PI) > 90;
+                ctx.save(); ctx.translate(x, y);
                 if (isLeft) ctx.scale(-1, 1);
                 ctx.drawImage(frame, -size/2, -size/2, size, size);
                 ctx.restore();
             }
         }
 
-        // --- ЗАГРУЗКА АССЕТОВ ---
         const Assets = {
-            orc: null,
-            player: null,
-            floor: new Image(),
-            tileset: new Image(),
-            decorations: new Image(),
-            stone: new Image(),
-            
+            orc: null, player: null, boss: null, floor: new Image(), stone: new Image(),
             init: function() {
-                const COLS = 6;
-                const ROWS = 4;
-                
                 this.orc = new CompositeSprite([
-                    new SpriteLayer('img/enemy/orc1_walk_shadow.png', COLS, ROWS),
-                    new SpriteLayer('img/enemy/orc1_walk_body.png', COLS, ROWS),
-                    new SpriteLayer('img/enemy/orc1_walk_head.png', COLS, ROWS)
+                    new SpriteLayer('img/enemy/orc1_walk_shadow.png', 6, 4),
+                    new SpriteLayer('img/enemy/orc1_walk_body.png', 6, 4),
+                    new SpriteLayer('img/enemy/orc1_walk_head.png', 6, 4)
                 ], 8);
-                
                 this.player = new PlayerSprite();
+                this.boss = new BossSprite();
                 this.floor.src = 'img/floor.png';
-                this.tileset.src = 'img/TopDownFantasy-Forest/Tiles/Tileset.png';
-                this.decorations.src = 'img/TopDownFantasy-Forest/Decorations/Decorations.png';
                 this.stone.src = 'img/weapons/stone.png';
             }
         };
         Assets.init();
 
-        // --- ИГРА ---
+        // --- ГЕЙМПЛЕЙ ПЕРЕМЕННЫЕ ---
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let width, height;
         
         let gameState = 'MENU';
+        let floor = 1;
+        let killCount = 0;
+        const KILLS_TO_BOSS = 30; // 30 врагов до босса
+        let bossMode = false;
+        let boss = null;
+        let spawnIntervalId;
+        
         const player = {
-            x: 0, y: 0,
-            speed: 3,
-            baseSpeed: 3,
-            slideSpeed: 6,
-            isSliding: false,
-            slideCooldown: 0,
-            slideDuration: 0,
-            color: '#3b82f6',
-            lives: 3,
-            maxLives: 3,
-            invulnerable: 0,
-            moving: false,
-            attacking: false,
-            speedLevel: 0,
-            damageLevel: 0,
-            healthLevel: 0,
-            ultiLevel: 0
+            x: 0, y: 0, speed: 3, baseSpeed: 3, slideSpeed: 6, isSliding: false, slideCooldown: 0, slideDuration: 0,
+            lives: 3, maxLives: 3, invulnerable: 0, moving: false, attacking: false,
+            speedLevel: 0, damageLevel: 0, healthLevel: 0, ultiLevel: 0
         };
         let enemies = [];
         let projectiles = [];
+        let score = 0;
+        
         const keys = {};
         const mouse = { x: 0, y: 0 };
         const camera = { x: 0, y: 0 };
-        let score = 0;
-        let spawnIntervalId;
-        
         let ultCooldown = 0;
         const ultCooldownMax = 5000;
-        
+
         const abilityCosts = {
-            speed: [500, 750, 1000, 1500, 2000],
-            damage: [750, 1000, 1500, 2000, 3000],
-            health: [1000, 2000, 3000],
-            ulti: [1500, 2000, 3000, 4000, 5000]
+            speed: [500, 750, 1000, 1500, 2000], damage: [750, 1000, 1500, 2000, 3000],
+            health: [1000, 2000, 3000], ulti: [1500, 2000, 3000, 4000, 5000]
         };
 
-        function resize() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-        }
-        window.addEventListener('resize', resize);
-        resize();
+        // --- ЛОГИКА БОССА ---
+        const BossLogic = {
+            init: function(lvl) {
+                return {
+                    x: player.x + (Math.random() > 0.5 ? 400 : -400),
+                    y: player.y + (Math.random() > 0.5 ? 400 : -400),
+                    hp: 500 + (lvl * 250), maxHp: 500 + (lvl * 250),
+                    size: 128, state: 'idle', timer: 0, attackCooldown: 120, speed: 1.5 + (lvl * 0.2)
+                };
+            },
+            update: function(b) {
+                b.timer++;
+                Assets.boss.update(b.state === 'attacking' ? 'attack' : 'idle');
+                
+                // Движение
+                if (b.state !== 'attacking') {
+                    const angle = Math.atan2(player.y - b.y, player.x - b.x);
+                    b.x += Math.cos(angle) * b.speed;
+                    b.y += Math.sin(angle) * b.speed;
+                }
+
+                // Атака
+                b.attackCooldown--;
+                if (b.attackCooldown <= 0) {
+                    this.performAttack(b);
+                    b.attackCooldown = 180;
+                }
+
+                // Урон телом
+                if (Math.hypot(player.x - b.x, player.y - b.y) < b.size/2 - 30) {
+                    damagePlayer();
+                }
+            },
+            performAttack: function(b) {
+                b.state = 'attacking';
+                setTimeout(() => { b.state = 'idle'; }, 1000);
+                
+                const attackType = Math.random();
+                // Тип 1: Плевок в игрока (3 снаряда)
+                if (attackType > 0.4) {
+                    const baseAngle = Math.atan2(player.y - b.y, player.x - b.x);
+                    for (let i = -1; i <= 1; i++) {
+                        projectiles.push({
+                            x: b.x, y: b.y,
+                            vx: Math.cos(baseAngle + i * 0.3) * 7,
+                            vy: Math.sin(baseAngle + i * 0.3) * 7,
+                            life: 200, type: 'enemy_seed'
+                        });
+                    }
+                } else {
+                    // Тип 2: Круговой взрыв
+                    const count = 12 + floor;
+                    for (let i = 0; i < count; i++) {
+                        const angle = (Math.PI * 2 / count) * i;
+                        projectiles.push({
+                            x: b.x, y: b.y,
+                            vx: Math.cos(angle) * 5, vy: Math.sin(angle) * 5,
+                            life: 200, type: 'enemy_seed'
+                        });
+                    }
+                }
+            },
+            draw: function(ctx, b) {
+                ctx.fillStyle = 'rgba(0,0,0,0.4)';
+                ctx.beginPath(); ctx.ellipse(b.x, b.y + 50, 40, 15, 0, 0, Math.PI*2); ctx.fill();
+                Assets.boss.draw(ctx, b.x, b.y, b.size);
+            }
+        };
+
+        // --- CORE FUNCTIONS ---
+        function resize() { width = window.innerWidth; height = window.innerHeight; canvas.width = width; canvas.height = height; }
+        window.addEventListener('resize', resize); resize();
 
         window.addEventListener('keydown', e => {
             keys[e.key.toLowerCase()] = true;
             if (e.key === 'Escape') togglePause();
-            if (e.key.toLowerCase() === 'f' && gameState === 'PLAYING') {
-                if (ultCooldown <= 0) {
-                    useUltimate();
-                    ultCooldown = ultCooldownMax;
-                }
+            if (e.key.toLowerCase() === 'f' && gameState === 'PLAYING' && ultCooldown <= 0) {
+                useUltimate(); ultCooldown = ultCooldownMax;
             }
-            if (e.key.toLowerCase() === 'c' && gameState === 'PLAYING') {
-                document.getElementById('shop-modal').classList.remove('hidden');
-            }
+            if (e.key.toLowerCase() === 'c' && gameState === 'PLAYING') document.getElementById('shop-modal').classList.remove('hidden');
         });
         window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
         window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-        
         window.addEventListener('mousedown', () => {
             if (gameState === 'PLAYING') {
-                if (player.lastThrowTime === undefined) player.lastThrowTime = 0;
-                const currentTime = Date.now();
-                if (currentTime - player.lastThrowTime < 800) return;
-                
-                player.attacking = true;
-                setTimeout(() => { player.attacking = false; }, 300);
-                
+                const now = Date.now();
+                if ((player.lastThrowTime || 0) + 400 > now) return; // Скорострельность
+                player.attacking = true; setTimeout(() => player.attacking = false, 300);
                 const angle = Math.atan2(mouse.y - height/2, mouse.x - width/2);
                 projectiles.push({
                     x: player.x, y: player.y,
                     vx: Math.cos(angle) * 15, vy: Math.sin(angle) * 15,
-                    life: 100,
-                    type: 'stone'
+                    life: 100, type: 'stone'
                 });
-                player.lastThrowTime = currentTime;
+                player.lastThrowTime = now;
             }
         });
 
+        // UI Handlers
         document.getElementById('start-btn').onclick = startGame;
         document.getElementById('restart-btn').onclick = startGame;
         document.getElementById('resume-btn').onclick = togglePause;
         document.getElementById('menu-btn').onclick = goToMenu;
-        document.getElementById('shop-btn').onclick = () => {
-            document.getElementById('shop-modal').classList.remove('hidden');
-        };
-        document.getElementById('close-shop-btn').onclick = () => {
-            document.getElementById('shop-modal').classList.add('hidden');
-        };
-        
-        document.querySelector('.buy-speed').onclick = () => buyAbility('speed');
-        document.querySelector('.buy-damage').onclick = () => buyAbility('damage');
-        document.querySelector('.buy-health').onclick = () => buyAbility('health');
-        document.querySelector('.buy-ulti').onclick = () => buyAbility('ulti');
+        document.getElementById('shop-btn').onclick = () => document.getElementById('shop-modal').classList.remove('hidden');
+        document.getElementById('close-shop-btn').onclick = () => document.getElementById('shop-modal').classList.add('hidden');
+        document.querySelectorAll('.buy-speed, .buy-damage, .buy-health, .buy-ulti').forEach(btn => {
+            btn.onclick = (e) => {
+                const type = e.target.className.split(' ')[0].split('-')[1];
+                buyAbility(type);
+            }
+        });
 
         function togglePause() {
-            if (gameState === 'PLAYING') {
-                gameState = 'PAUSED';
-                document.getElementById('pause-menu').classList.remove('hidden');
-            } else if (gameState === 'PAUSED') {
-                gameState = 'PLAYING';
-                document.getElementById('pause-menu').classList.add('hidden');
-            }
+            if (gameState === 'PLAYING') { gameState = 'PAUSED'; document.getElementById('pause-menu').classList.remove('hidden'); }
+            else if (gameState === 'PAUSED') { gameState = 'PLAYING'; document.getElementById('pause-menu').classList.add('hidden'); }
         }
 
         function goToMenu() {
@@ -551,85 +444,93 @@
             document.getElementById('pause-menu').classList.add('hidden');
             document.getElementById('hud-layer').classList.add('hidden');
             document.getElementById('start-screen').classList.remove('hidden');
-            enemies = [];
-            projectiles = [];
-        }
-
-        function updateLivesUI() {
-            const container = document.getElementById('lives-container');
-            let hearts = '';
-            for(let i=0; i < player.lives; i++) hearts += '♥';
-            container.innerText = hearts;
         }
 
         function spawnEnemy() {
-            if(gameState !== 'PLAYING') return;
+            if(gameState !== 'PLAYING' || bossMode) return;
             const angle = Math.random() * Math.PI * 2;
             const dist = 900;
+            const hp = 30 + (floor * 10);
             enemies.push({
                 x: player.x + Math.cos(angle) * dist,
                 y: player.y + Math.sin(angle) * dist,
-                speed: 1.5 + Math.random(),
-                hp: 30, maxHp: 30,
-                animOffset: Math.floor(Math.random() * 10) 
+                speed: 1.5 + Math.random() + (floor * 0.1),
+                hp: hp, maxHp: hp, animOffset: Math.floor(Math.random() * 10) 
             });
         }
 
         function update() {
             if (gameState !== 'PLAYING') return;
 
+            // Движение игрока
             let dx = 0, dy = 0;
             if (keys['w'] || keys['ц']) dy = -1;
             if (keys['s'] || keys['ы']) dy = 1;
             if (keys['a'] || keys['ф']) dx = -1;
             if (keys['d'] || keys['в']) dx = 1;
             
-            const isMoving = (dx !== 0 || dy !== 0);
-            player.moving = isMoving;
+            player.moving = (dx !== 0 || dy !== 0);
             
-            if (keys['shift'] && !player.isSliding && player.slideCooldown <= 0 && isMoving) {
-                player.isSliding = true;
-                player.slideDuration = 30;
-                player.slideCooldown = 180;
+            // Рывок
+            if (keys['shift'] && !player.isSliding && player.slideCooldown <= 0 && player.moving) {
+                player.isSliding = true; player.slideDuration = 20; player.slideCooldown = 120;
             }
-            
-            if (player.isSliding) {
-                player.slideDuration--;
-                if (player.slideDuration <= 0) player.isSliding = false;
-            }
-            
+            if (player.isSliding) { player.slideDuration--; if (player.slideDuration <= 0) player.isSliding = false; }
             if (player.slideCooldown > 0) player.slideCooldown--;
-            
-            if (isMoving) {
+
+            if (player.moving) {
                 const len = Math.hypot(dx, dy);
-                const currentSpeed = player.isSliding ? player.slideSpeed : player.speed;
-                player.x += (dx/len) * currentSpeed;
-                player.y += (dy/len) * currentSpeed;
+                const spd = player.isSliding ? player.slideSpeed : player.speed;
+                player.x += (dx/len) * spd; player.y += (dy/len) * spd;
             }
 
             if (player.invulnerable > 0) player.invulnerable--;
-            
-            if (ultCooldown > 0) {
-                ultCooldown -= 1000 / 60;
-                if (ultCooldown < 0) ultCooldown = 0;
+            if (ultCooldown > 0) ultCooldown -= 16;
+            camera.x = player.x - width/2; camera.y = player.y - height/2;
+            if (Assets.player) Assets.player.update(player.moving, player.attacking, player.speed, player.isSliding);
+
+            // Босс: спавн
+            if (!bossMode && killCount >= KILLS_TO_BOSS) {
+                startBossFight();
             }
 
-            camera.x = player.x - width/2;
-            camera.y = player.y - height/2;
-
-            if (Assets.player) {
-                Assets.player.update(player.moving, player.attacking, player.speed, player.isSliding);
+            // Босс: апдейт
+            if (boss) {
+                BossLogic.update(boss);
+                // Попадания по боссу
+                for (let j = projectiles.length - 1; j >= 0; j--) {
+                    let p = projectiles[j];
+                    if (p.type === 'stone' && Math.hypot(p.x - boss.x, p.y - boss.y) < 60) {
+                        boss.hp -= 10 * (1 + player.damageLevel * 0.25);
+                        projectiles.splice(j, 1);
+                        const percent = Math.max(0, (boss.hp / boss.maxHp) * 100);
+                        document.getElementById('boss-hp-bar').style.width = percent + '%';
+                        if (boss.hp <= 0) killBoss();
+                        break;
+                    }
+                }
             }
 
+            // Снаряды
             for (let i = projectiles.length - 1; i >= 0; i--) {
                 let p = projectiles[i];
                 p.x += p.vx; p.y += p.vy;
                 p.life--;
+                
+                // Вражеские снаряды попадают в игрока
+                if (p.type === 'enemy_seed') {
+                    if (Math.hypot(p.x - player.x, p.y - player.y) < 20) {
+                        damagePlayer();
+                        p.life = 0;
+                    }
+                }
+
                 if (p.life <= 0) projectiles.splice(i, 1);
             }
-
+            
             Assets.orc.update();
 
+            // Враги
             for (let i = enemies.length - 1; i >= 0; i--) {
                 let e = enemies[i];
                 const angle = Math.atan2(player.y - e.y, player.x - e.x);
@@ -637,282 +538,216 @@
                 e.y += Math.sin(angle) * e.speed;
                 e.angle = angle;
 
+                // Урон врагам
                 for (let j = projectiles.length - 1; j >= 0; j--) {
                     let p = projectiles[j];
-                    if (Math.hypot(p.x - e.x, p.y - e.y) < 30) {
+                    if (p.type === 'stone' && Math.hypot(p.x - e.x, p.y - e.y) < 30) {
                         e.hp -= 10 * (1 + player.damageLevel * 0.25);
                         projectiles.splice(j, 1);
                         if (e.hp <= 0) {
                             enemies.splice(i, 1);
                             score += 100;
-                            document.getElementById('money-display').innerText = score;
+                            killCount++;
+                            updateStats();
                         }
                         break;
                     }
                 }
-                
-                if (Math.hypot(player.x - e.x, player.y - e.y) < 35) {
-                    if (player.invulnerable <= 0) {
-                        player.lives--;
-                        player.invulnerable = 60;
-                        Assets.player.setAnimation('hurt');
-                        updateLivesUI();
-                        if (player.lives <= 0) {
-                            gameState = 'GAMEOVER';
-                            document.getElementById('final-score').innerText = score;
-                            document.getElementById('game-over').classList.remove('hidden');
-                        }
-                    }
+                // Урон игроку
+                if (Math.hypot(player.x - e.x, player.y - e.y) < 35) damagePlayer();
+            }
+        }
+
+        function damagePlayer() {
+            if (player.invulnerable <= 0) {
+                player.lives--;
+                player.invulnerable = 60;
+                Assets.player.setAnimation('hurt');
+                updateLivesUI();
+                if (player.lives <= 0) {
+                    gameState = 'GAMEOVER';
+                    document.getElementById('final-score').innerText = score;
+                    document.getElementById('final-floor').innerText = floor;
+                    document.getElementById('game-over').classList.remove('hidden');
+                    document.getElementById('boss-hud').classList.add('hidden');
                 }
             }
         }
 
         function draw() {
-            ctx.fillStyle = '#222';
-            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = '#222'; ctx.fillRect(0, 0, width, height);
             
             // Фон
-            ctx.save();
-            ctx.translate(-camera.x % 128, -camera.y % 128);
-            if (Assets.floor.complete && Assets.floor.naturalWidth !== 0) {
-                try {
-                    const pat = ctx.createPattern(Assets.floor, 'repeat');
-                    ctx.fillStyle = pat; ctx.fillRect(-128, -128, width + 256, height + 256);
-                } catch (e) {}
+            ctx.save(); ctx.translate(-camera.x % 128, -camera.y % 128);
+            if (Assets.floor.complete && Assets.floor.naturalWidth) {
+                const pat = ctx.createPattern(Assets.floor, 'repeat');
+                ctx.fillStyle = pat; ctx.fillRect(-128, -128, width + 256, height + 256);
             } else {
-                ctx.strokeStyle = '#333'; ctx.lineWidth = 2; ctx.beginPath();
+                ctx.strokeStyle = '#333'; ctx.beginPath();
                 for(let x=0; x<width+128; x+=100) { ctx.moveTo(x,0); ctx.lineTo(x,height+128); }
-                for(let y=0; y<height+128; y+=100) { ctx.moveTo(0,y); ctx.lineTo(width+128,y); }
                 ctx.stroke();
             }
             ctx.restore();
 
-            // Убираем декорации, так как они временно не нужны
-            
-            ctx.save();
-            ctx.translate(-camera.x, -camera.y);
+            ctx.save(); ctx.translate(-camera.x, -camera.y);
 
-            ctx.globalAlpha = (player.invulnerable > 0 && player.invulnerable % 10 < 5) ? 0.5 : 1;
-            const aimAngle = Math.atan2(mouse.y - height/2, mouse.x - width/2);
-            if (Assets.player) {
-                Assets.player.draw(ctx, player.x, player.y, 64, aimAngle);
-            }
-            ctx.globalAlpha = 1;
+            // Снаряды
+            projectiles.forEach(p => {
+                if (p.type === 'stone') {
+                    if (Assets.stone.complete) ctx.drawImage(Assets.stone, p.x-10, p.y-10, 20, 20);
+                    else { ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill(); }
+                } else if (p.type === 'enemy_seed') {
+                    ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.arc(p.x, p.y, 8, 0, Math.PI*2); ctx.fill();
+                    ctx.strokeStyle = '#7f1d1d'; ctx.lineWidth = 2; ctx.stroke();
+                }
+            });
 
+            // Враги
             enemies.forEach(e => {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-                ctx.beginPath(); 
-                ctx.ellipse(e.x, e.y + 15, 15, 8, 0, 0, Math.PI*2); 
-                ctx.fill();
-
+                ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.ellipse(e.x, e.y+15, 15, 8, 0, 0, Math.PI*2); ctx.fill();
                 Assets.orc.draw(ctx, e.x, e.y, 96, e.angle);
-
-                ctx.fillStyle = '#fff';
-                ctx.font = '10px "Press Start 2P"'; 
-                ctx.textAlign = 'center';
-                ctx.shadowColor="black"; ctx.shadowBlur=4;
-                ctx.fillText('ПОЛИНА', e.x, e.y + 55);
-                ctx.shadowBlur=0;
-
                 const hpPercent = Math.max(0, e.hp / e.maxHp);
                 ctx.fillStyle = 'black'; ctx.fillRect(e.x - 20, e.y - 50, 40, 6);
                 ctx.fillStyle = '#ef4444'; ctx.fillRect(e.x - 20, e.y - 50, 40 * hpPercent, 6);
             });
 
-            projectiles.forEach(p => {
-                if (p.type === 'stone' && Assets.stone.complete && Assets.stone.naturalWidth !== 0) {
-                    ctx.drawImage(Assets.stone, p.x - 10, p.y - 10, 20, 20);
-                } else {
-                    ctx.fillStyle = '#fbbf24';
-                    ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill();
-                }
-            });
+            // Босс
+            if (boss) BossLogic.draw(ctx, boss);
+
+            // Игрок
+            ctx.globalAlpha = (player.invulnerable > 0 && player.invulnerable % 10 < 5) ? 0.5 : 1;
+            Assets.player.draw(ctx, player.x, player.y, 64, Math.atan2(mouse.y - height/2, mouse.x - width/2));
+            ctx.globalAlpha = 1;
 
             ctx.restore();
             
-            // HUD Ульты
-            if (ultCooldown > 0) {
-                const cooldownPercent = ultCooldown / ultCooldownMax;
-                const barWidth = 100;
-                const barHeight = 10;
-                const x = width - barWidth - 20;
-                const y = 60; // Переместили ниже, чтобы не перекрывалось сердцами
-                
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                ctx.fillRect(x, y, barWidth, barHeight);
-                ctx.fillStyle = '#eab308';
-                ctx.fillRect(x, y, barWidth * cooldownPercent, barHeight);
-                ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
-                ctx.strokeRect(x, y, barWidth, barHeight);
-                ctx.fillStyle = '#fff'; ctx.font = '12px "Press Start 2P"'; ctx.textAlign = 'center';
-                ctx.fillText('УЛЬТА', width - barWidth/2 - 20, y - 10);
-            }
-            
-            // HUD Скольжения
-            if (player.slideCooldown > 0) {
-                const cooldownPercent = player.slideCooldown / 180;
-                const barWidth = 100;
-                const barHeight = 10;
-                const x = width - barWidth - 20;
-                const y = 120; // Переместили ниже, чтобы не перекрывалось с сердцами и ультой
-                
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-                ctx.fillRect(x, y, barWidth, barHeight);
-                ctx.fillStyle = '#3b82f6';
-                ctx.fillRect(x, y, barWidth * cooldownPercent, barHeight);
-                ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
-                ctx.strokeRect(x, y, barWidth, barHeight);
-                ctx.fillStyle = '#fff'; ctx.font = '12px "Press Start 2P"'; ctx.textAlign = 'center';
-                ctx.fillText('РЫВОК', width - barWidth/2 - 20, y - 10);
-            }
+            // HUD кулдаунов
+            drawCooldown(ultCooldown, ultCooldownMax, 60, 'УЛЬТА', '#eab308');
+            drawCooldown(player.slideCooldown, 120, 120, 'РЫВОК', '#3b82f6');
             
             requestAnimationFrame(() => { update(); draw(); });
         }
 
-        function useUltimate() {
-            const aimAngle = Math.atan2(mouse.y - height/2, mouse.x - width/2);
-            let stoneCount = 10 + player.ultiLevel * 5; 
+        function drawCooldown(current, max, yOffset, label, color) {
+            if (current <= 0) return;
+            const pct = current / max;
+            const w = 100, h = 10, x = width - w - 20;
+            ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fillRect(x, yOffset, w, h);
+            ctx.fillStyle = color; ctx.fillRect(x, yOffset, w * pct, h);
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.strokeRect(x, yOffset, w, h);
+            ctx.fillStyle = '#fff'; ctx.font = '10px "Press Start 2P"'; ctx.textAlign = 'center';
+            ctx.fillText(label, width - w/2 - 20, yOffset - 5);
+        }
+
+        function startBossFight() {
+            bossMode = true; enemies = [];
+            document.getElementById('boss-hud').classList.remove('hidden');
+            document.getElementById('boss-hp-bar').style.width = '100%';
+            boss = BossLogic.init(floor);
+        }
+
+        function killBoss() {
+            boss = null; bossMode = false;
+            document.getElementById('boss-hud').classList.add('hidden');
+            score += 1000 * floor;
+            nextFloor();
+        }
+
+        function nextFloor() {
+            floor++;
+            killCount = 0;
+            if (player.lives < player.maxLives) { player.lives++; updateLivesUI(); }
             
-            for (let i = 0; i < stoneCount; i++) {
-                const angleOffset = (Math.random() - 0.5) * Math.PI / 3;
-                const projectileAngle = aimAngle + angleOffset;
-                const speed = 10 + Math.random() * 10;
-                
-                projectiles.push({
-                    x: player.x, y: player.y,
-                    vx: Math.cos(projectileAngle) * speed,
-                    vy: Math.sin(projectileAngle) * speed,
-                    life: 100,
-                    type: 'stone'
-                });
+            const ann = document.getElementById('level-announcement');
+            const text = document.getElementById('announcement-text');
+            text.innerText = `ЭТАЖ ${floor}`;
+            text.classList.remove('animate-floor');
+            void text.offsetWidth; // trigger reflow
+            text.classList.add('animate-floor');
+            ann.classList.remove('hidden');
+            setTimeout(() => ann.classList.add('hidden'), 3000);
+            
+            updateStats();
+        }
+
+        function useUltimate() {
+            const count = 10 + player.ultiLevel * 5;
+            const baseAngle = Math.atan2(mouse.y - height/2, mouse.x - width/2);
+            for(let i=0; i<count; i++) {
+                const a = baseAngle + (Math.random()-0.5);
+                const s = 10 + Math.random()*10;
+                projectiles.push({ x: player.x, y: player.y, vx: Math.cos(a)*s, vy: Math.sin(a)*s, life: 100, type: 'stone' });
             }
         }
         
+        function updateStats() {
+            document.getElementById('money-display').innerText = score;
+            document.getElementById('floor-display').innerText = floor;
+            document.getElementById('kills-display').innerText = Math.max(0, KILLS_TO_BOSS - killCount);
+            updateShopUI();
+        }
+
+        function updateLivesUI() {
+            document.getElementById('lives-container').innerText = '♥'.repeat(player.lives);
+        }
+
         function buyAbility(type) {
-            let maxLevel;
-            switch(type) {
-                case 'speed': maxLevel = 5; break;
-                case 'damage': maxLevel = 5; break;
-                case 'health': maxLevel = 3; break;
-                case 'ulti': maxLevel = 5; break;
-                default: return;
-            }
-            
-            const currentLevel = player[`${type}Level`];
-            if (currentLevel >= maxLevel) return;
-            
-            const cost = abilityCosts[type][currentLevel];
+            const max = {speed:5, damage:5, health:3, ulti:5}[type];
+            const lvl = player[`${type}Level`];
+            if (lvl >= max) return;
+            const cost = abilityCosts[type][lvl];
             if (score < cost) return;
-            
             score -= cost;
             player[`${type}Level`]++;
-            document.getElementById('money-display').innerText = score;
+            if(type==='health') { player.maxLives++; player.lives = player.maxLives; updateLivesUI(); }
+            if(type==='speed') { player.speed = player.baseSpeed * (1 + player.speedLevel*0.2); player.slideSpeed = 6 * (1 + player.speedLevel*0.2); }
             
-            updateShopUI();
-            applyAbilityEffects();
+            updateStats();
+            document.getElementById(`${type}-indicator`).classList.remove('hidden');
+            document.getElementById(`${type}-level-indicator`).innerText = player[`${type}Level`];
         }
-        
+
         function updateShopUI() {
-            document.getElementById('speed-level').innerText = player.speedLevel;
-            document.getElementById('damage-level').innerText = player.damageLevel;
-            document.getElementById('health-level').innerText = player.healthLevel;
-            document.getElementById('ulti-level').innerText = player.ultiLevel;
-            
-            updateAbilityButton('speed', player.speedLevel, 5);
-            updateAbilityButton('damage', player.damageLevel, 5);
-            updateAbilityButton('health', player.healthLevel, 3);
-            updateAbilityButton('ulti', player.ultiLevel, 5);
-        }
-        
-        function updateAbilityButton(type, currentLevel, maxLevel) {
-            const costElement = document.getElementById(`${type}-cost`);
-            const button = document.querySelector(`.buy-${type}`);
-            
-            if (currentLevel >= maxLevel) {
-                costElement.innerText = 'МАКС';
-                button.disabled = true;
-                button.classList.add('bg-gray-500');
-                button.classList.remove('btn-retro');
-            } else {
-                const cost = abilityCosts[type][currentLevel];
-                costElement.innerText = cost;
-                
-                if (score >= cost) {
-                    button.disabled = false;
-                    button.classList.remove('bg-gray-500');
-                    button.classList.add('btn-retro');
+            ['speed','damage','health','ulti'].forEach(type => {
+                const lvl = player[`${type}Level`];
+                const max = {speed:5, damage:5, health:3, ulti:5}[type];
+                document.getElementById(`${type}-level`).innerText = lvl;
+                const btn = document.querySelector(`.buy-${type}`);
+                const costSpan = document.getElementById(`${type}-cost`);
+                if (lvl >= max) {
+                    costSpan.innerText = "MAX"; btn.disabled = true; btn.classList.add('bg-gray-500'); btn.classList.remove('btn-retro');
                 } else {
-                    button.disabled = true;
-                    button.classList.add('bg-gray-500');
-                    button.classList.remove('btn-retro');
+                    const cost = abilityCosts[type][lvl];
+                    costSpan.innerText = cost;
+                    if (score >= cost) { btn.disabled = false; btn.classList.add('btn-retro'); btn.classList.remove('bg-gray-500'); }
+                    else { btn.disabled = true; btn.classList.add('bg-gray-500'); btn.classList.remove('btn-retro'); }
                 }
-            }
+            });
         }
-        
-        function applyAbilityEffects() {
-            const speedIncrease = player.speedLevel * 0.2;
-            player.speed = player.baseSpeed * (1 + speedIncrease);
-            player.slideSpeed = 6 * (1 + speedIncrease);
-            
-            const healthIncrease = player.healthLevel;
-            player.maxLives = 3 + healthIncrease;
-            if (player.lives < player.maxLives) {
-                player.lives = player.maxLives;
-                updateLivesUI();
-            }
-            
-            updateAbilityIndicators();
-        }
-        
-        function updateAbilityIndicators() {
-            updateSingleAbilityIndicator('speed', player.speedLevel);
-            updateSingleAbilityIndicator('damage', player.damageLevel);
-            updateSingleAbilityIndicator('health', player.healthLevel);
-            updateSingleAbilityIndicator('ulti', player.ultiLevel);
-        }
-        
-        function updateSingleAbilityIndicator(type, level) {
-            const indicator = document.getElementById(`${type}-indicator`);
-            const levelIndicator = document.getElementById(`${type}-level-indicator`);
-            
-            if (level > 0) {
-                indicator.classList.remove('hidden');
-                levelIndicator.innerText = level;
-            } else {
-                indicator.classList.add('hidden');
-            }
-        }
-        
-        // --- СТАРТ ---
+
         function startGame() {
             document.getElementById('start-screen').classList.add('hidden');
             document.getElementById('game-over').classList.add('hidden');
             document.getElementById('hud-layer').classList.remove('hidden');
             
             gameState = 'PLAYING';
+            floor = 1; killCount = 0; score = 0;
+            bossMode = false; boss = null;
+            document.getElementById('boss-hud').classList.add('hidden');
+            
             player.x = 0; player.y = 0;
-            player.lives = 3;
-            player.maxLives = 3;
-            player.invulnerable = 0;
-            player.moving = false;
-            player.attacking = false;
-            player.speedLevel = 0;
-            player.damageLevel = 0;
-            player.healthLevel = 0;
-            player.ultiLevel = 0;
-            enemies = []; projectiles = []; score = 0;
+            player.lives = 3; player.maxLives = 3;
+            player.speedLevel = 0; player.damageLevel = 0; player.healthLevel = 0; player.ultiLevel = 0;
+            player.speed = player.baseSpeed;
+            enemies = []; projectiles = [];
             
             updateLivesUI();
-            document.getElementById('money-display').innerText = score;
-            updateShopUI();
-            updateAbilityIndicators();
-            
+            updateStats();
+            ['speed','damage','health','ulti'].forEach(t => document.getElementById(`${t}-indicator`).classList.add('hidden'));
+
             if (spawnIntervalId) clearInterval(spawnIntervalId);
-            for(let i=0; i<5; i++) spawnEnemy();
             spawnIntervalId = setInterval(spawnEnemy, 1500);
         }
-
-        draw();
     </script>
 </body>
 </html>
